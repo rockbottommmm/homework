@@ -77,7 +77,30 @@ def planet (update,context):
     else:
         update.message.reply_text('Введите планету правильно (с большой буквы и на английском')
 
-    
+def wordcount(update,context):
+    text = 'Вызван /wordcount'
+    print(text) 
+    string_raw = update.message.text
+    string = string_raw.split()[1:]
+    result = 0
+    for n in string:
+        result +=1
+    if 1 < result < 4:
+        update.message.reply_text(f'{result} слова')
+    elif result == 1:
+        update.message.reply_text(f'{result} слово')
+    elif result == 0:
+        update.message.reply_text('Попробуй написать слово после вызова команды\
+в формате "/wordcount "слово"')
+    elif result > 4:
+        update.message.reply_text(f'{result} слов')
+
+def next_moon(update,context):
+    text = 'Вызван full_moon'
+    print(text)
+    current_date = datetime.now().date().strftime('%d/%m/%Y')
+    result = ephem.next_full_moon(current_date)
+    update.message.reply_text(result)
 
 
 def talk_to_me(update, context):
@@ -85,6 +108,31 @@ def talk_to_me(update, context):
     print(user_text)
     update.message.reply_text(user_text)
 
+def calc(update,context):
+    print('Вызван calc')
+    string_raw = update.message.text
+    string_ready = string_raw.strip().split()
+    first_digit = string_ready[1]
+    second_digit = string_ready[3]
+    sign = string_ready[2]
+    result = 0
+    try:
+        if sign == '+':
+            result = int(first_digit) + int(second_digit)
+            update.message.reply_text(result)
+        elif sign == '-':
+            result = int(first_digit) - int(second_digit)
+            update.message.reply_text(result)
+        elif sign == '*':
+            result = int(first_digit) * int(second_digit)
+            update.message.reply_text(result)
+        elif sign == '/':
+            result = int(first_digit) / int(second_digit)
+            update.message.reply_text(result)
+        elif first_digit == '' or second_digit == '' or sign == '':
+            update.message.reply_text('Введи данные правильно (как в калькуляторе)')
+    except (ValueError,TypeError):
+        update.message.reply_text('Проверь данные!')
 
 def main():
     mybot = Updater(settings.API_KEY, use_context=True)
@@ -92,6 +140,9 @@ def main():
     dp = mybot.dispatcher
     dp.add_handler(CommandHandler("start", greet_user))
     dp.add_handler(CommandHandler('planet', planet))
+    dp.add_handler(CommandHandler('wordcount', wordcount))
+    dp.add_handler(CommandHandler('next_moon',next_moon))
+    dp.add_handler(CommandHandler('calc', calc))
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
     
 
