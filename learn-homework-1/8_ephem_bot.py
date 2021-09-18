@@ -98,8 +98,11 @@ def wordcount(update,context):
 def next_moon(update,context):
     text = 'Вызван full_moon'
     print(text)
-    current_date = datetime.now().date().strftime('%d/%m/%Y')
-    result = ephem.next_full_moon(current_date)
+    string_raw = update.message.text
+    string_ready = string_raw.strip().split()
+
+    date = datetime.strptime(string_ready[1],'%Y-%m-%d')
+    result = ephem.next_full_moon(date)
     update.message.reply_text(result)
 
 
@@ -126,11 +129,13 @@ def calc(update,context):
         elif sign == '*':
             result = int(first_digit) * int(second_digit)
             update.message.reply_text(result)
-        elif sign == '/':
+        elif sign == '/' and int(second_digit) != 0:
             result = int(first_digit) / int(second_digit)
             update.message.reply_text(result)
         elif first_digit == '' or second_digit == '' or sign == '':
             update.message.reply_text('Введи данные правильно (как в калькуляторе)')
+        elif sign == '/' and int(second_digit) == 0:
+            raise ZeroDivisionError(update.message.reply_text('На ноль делить нельзя'))
     except (ValueError,TypeError):
         update.message.reply_text('Проверь данные!')
 
